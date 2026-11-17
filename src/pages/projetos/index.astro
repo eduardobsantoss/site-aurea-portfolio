@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import Projeto from '../../components/Projeto.astro';
+import { projetos } from '../../data/site';
+---
+
+<Base
+  titulo="Projetos | Aurea"
+  descricao="Sites que a Aurea criou para negócios de Uberaba e região."
+>
+  <section class="pagina-topo container">
+    <p class="kicker">Projetos</p>
+    <h1 data-revela>Sites que já estão <span class="grifo">no ar.</span></h1>
+  </section>
+
+  <section class="container lista">
+    <ul class="projetos">
+      {
+        projetos.map((p, i) => (
+          <li class={i === 0 ? '-largo' : undefined} data-revela style={`--i:${i === 0 ? 0 : (i + 1) % 2}`}>
+            <Projeto projeto={p} nivel={2} largo={i === 0} sizes={i === 0 ? '100vw' : '(min-width: 48rem) 50vw, 100vw'} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .lista {
+    padding-bottom: calc(var(--secao) + var(--raio));
+  }
+</style>

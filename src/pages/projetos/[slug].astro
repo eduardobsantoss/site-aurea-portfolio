@@ -1,0 +1,162 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Capa from '../../components/Capa.astro';
+import Projeto from '../../components/Projeto.astro';
+import { projetos } from '../../data/site';
+
+export function getStaticPaths() {
+  return projetos.map((p, i) => ({
+    params: { slug: p.slug },
+    props: { projeto: p, proximo: projetos[(i + 1) % projetos.length] },
+  }));
+}
+
+const { projeto: p, proximo } = Astro.props;
+
+// Segunda imagem, opcional: src/assets/projetos/<slug>-2.jpg
+const imagens = import.meta.glob<{ default: ImageMetadata }>('../../assets/projetos/*-2.jpg', { eager: true });
+const segunda = imagens[`../../assets/projetos/${p.slug}-2.jpg`]?.default;
+const endereco = new URL(p.url).hostname.replace(/^www\./, '');
+---
+
+<Base titulo={`${p.nome} | Aurea`} descricao={`${p.resumo} criado pela Aurea para ${p.nome}. ${p.sobre}`}>
+  <section class="pagina-topo container">
+    <p class="kicker"><a href="/projetos">Projetos</a> / {p.area}</p>
+    <h1 data-revela>{p.nome}</h1>
+  </section>
+
+  <section class="container">
+    <div data-revela>
+      <Capa slug={p.slug} nome={p.nome} largo toca="sozinho" sizes="100vw" />
+    </div>
+  </section>
+
+  <section class="container ficha">
+    <dl data-revela>
+      <div>
+        <dt>Cliente</dt>
+        <dd>{p.nome}</dd>
+      </div>
+      <div>
+        <dt>Área</dt>
+        <dd>{p.area}</dd>
+      </div>
+      <div>
+        <dt>Projeto</dt>
+        <dd>{p.resumo}</dd>
+      </div>
+      <div>
+        <dt>Endereço</dt>
+        <dd>{endereco}</dd>
+      </div>
+    </dl>
+    <div class="ficha-texto" data-revela style="--i:1">
+      <p>{p.sobre}</p>
+      <a class="botao" href={p.url} target="_blank" rel="noopener">
+        Visitar o site
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>
+
+  {
+    segunda && (
+      <section class="container segunda">
+        <div class="segunda-quadro" data-revela>
+          <Image src={segunda} alt={`Outro trecho do site ${p.nome}`} widths={[640, 960, 1280]} sizes="100vw" />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="folha escuro proximo">
+    <div class="container">
+      <h2 class="kicker proximo-rotulo">Próximo projeto</h2>
+      <div data-revela>
+        <Projeto projeto={proximo} largo toca="hover" sizes="100vw" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pagina-topo .kicker a {
+    display: inline-block;
+    /* área de toque */
+    padding-block: 0.9rem;
+    margin-block: -0.9rem;
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  .proximo-rotulo {
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  /* Ficha do projeto */
+  .ficha {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+
+  .ficha dl {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem 1rem;
+    margin: 0;
+    align-content: start;
+  }
+
+  .ficha dt {
+    margin-bottom: 0.35rem;
+    font-size: var(--t-mini);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .ficha dd {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .ficha-texto p {
+    max-width: 30ch;
+    margin-bottom: 2rem;
+    font-size: var(--t-h2);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  @media (min-width: 60rem) {
+    .ficha {
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+    }
+  }
+
+  /* Segunda imagem */
+  .segunda {
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+
+  .segunda-quadro {
+    border-radius: var(--raio);
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgb(128 128 128 / 0.22);
+  }
+
+  .segunda-quadro :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Próximo projeto */
+  .proximo {
+    padding-bottom: calc(var(--secao) + var(--raio));
+  }
+</style>

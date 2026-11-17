@@ -1,0 +1,421 @@
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/500-italic.css';
+
+:root {
+  /* Paleta oficial da marca */
+  --purpura: #3e00f9;
+  --violeta: #5758ff;
+  --lima: #ddf500;
+  --piche: #0f0f0f;
+  --chumbo: #262626;
+  --branco: #ffffff;
+  --cinza: #f1f1f3;
+
+  --fonte: 'Poppins', system-ui, sans-serif;
+
+  /* Escala fluida: cresce com a largura da tela, com piso e teto */
+  --t-display: clamp(2.6rem, 7.2vw, 7rem);
+  --t-h2: clamp(2rem, 4.6vw, 4.25rem);
+  --t-h3: clamp(1.35rem, 2.2vw, 2rem);
+  --t-corpo: clamp(1rem, 1.15vw, 1.2rem);
+  --t-mini: 0.8rem;
+
+  --margem: clamp(1.25rem, 5vw, 5rem);
+  --raio: clamp(1.25rem, 2.4vw, 2.25rem);
+  --secao: clamp(4.5rem, 10vw, 9rem);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Brilho lima sobre púrpura. As duas cores são quase opostas e, misturadas direto, passam por um
+     cinza-amarronzado; a parada intermediária em lilás claro mantém a transição limpa. */
+  --lilas: rgb(176 160 255 / 0.85);
+  --brilho-lima-canto: radial-gradient(62% 82% at 100% 100% in oklab, var(--lima) 0%, var(--lima) 16%, var(--lilas) 44%, transparent 72%);
+  --brilho-lima-base: radial-gradient(64% 24rem at 50% 104% in oklab, var(--lima) 0%, var(--lima) 30%, var(--lilas) 54%, transparent 76%);
+
+  /* Ruído em tons de cinza, opaco e com contraste reforçado. Usado forte nos gradientes (.grao, em overlay)
+     e bem leve sobre a página inteira (.grao-geral, em Base.astro). */
+  --ruido: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncG type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncB type='linear' slope='2.2' intercept='-.6'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Permite animar altura até "auto" (usado nas dúvidas) onde houver suporte */
+  interpolate-size: allow-keywords;
+}
+
+/* Seleção de texto nas cores da marca */
+::selection {
+  background: var(--lima);
+  color: var(--piche);
+}
+
+/* Sobre fundo lima a seleção inverte para púrpura, senão some */
+.pilha-item:last-child::selection,
+.pilha-item:last-child ::selection,
+.bento-item.-b2::selection,
+.bento-item.-b2 ::selection {
+  background: var(--purpura);
+  color: var(--branco);
+}
+
+/* Cursor personalizado ativo: esconde o cursor do sistema (classe posta pelo script em Base.astro) */
+html.cursor-proprio,
+html.cursor-proprio * {
+  cursor: none !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--branco);
+  color: var(--piche);
+  font-family: var(--fonte);
+  font-size: var(--t-corpo);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--purpura);
+  outline-offset: 4px;
+}
+
+.escuro :focus-visible,
+.cor :focus-visible {
+  outline-color: var(--lima);
+}
+
+.container {
+  width: 100%;
+  padding-inline: var(--margem);
+  margin-inline: auto;
+  max-width: 110rem;
+}
+
+.kicker {
+  font-size: var(--t-mini);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Grifo da marca: marca-texto lima em fundo claro, texto lima em fundo escuro */
+/* inline-block com altura de linha 1 deixa a caixa lima na altura das letras, sem invadir a linha de cima */
+.grifo {
+  display: inline-block;
+  font-style: italic;
+  line-height: 1;
+  background: var(--lima);
+  padding: 0.02em 0.18em 0.1em;
+  border-radius: 0.14em;
+}
+
+.grifo::selection {
+  background: var(--purpura);
+  color: var(--branco);
+}
+
+.escuro .grifo,
+.cor .grifo {
+  display: inline;
+  line-height: inherit;
+  background: none;
+  padding: 0;
+  color: var(--lima);
+}
+
+.escuro .grifo::selection,
+.cor .grifo::selection {
+  background: var(--lima);
+  color: var(--piche);
+}
+
+/* Botão em pílula */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.95em 1.6em;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  background: var(--piche);
+  color: var(--branco);
+  font: inherit;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 0.3s var(--ease),
+    background 0.3s,
+    color 0.3s;
+}
+
+.botao:hover {
+  transform: scale(1.04);
+  background: var(--purpura);
+}
+
+.botao.-lima {
+  background: var(--lima);
+  color: var(--piche);
+}
+
+.botao.-lima:hover {
+  background: var(--branco);
+}
+
+.botao.-lima::selection,
+.botao.-lima ::selection {
+  background: var(--purpura);
+  color: var(--branco);
+}
+
+.botao {
+  white-space: nowrap;
+}
+
+.botao.-grande {
+  padding: 1em 1.7em;
+  /* No celular encolhe um pouco para o rótulo caber em uma linha */
+  font-size: clamp(1.1rem, 5vw, 2rem);
+  letter-spacing: -0.015em;
+}
+
+.botao.-contorno {
+  background: transparent;
+  border-color: currentColor;
+  color: inherit;
+}
+
+.botao.-contorno:hover {
+  background: var(--lima);
+  border-color: var(--lima);
+  color: var(--piche);
+}
+
+/* Seções que "sobem" sobre a anterior com cantos arredondados */
+.folha {
+  border-radius: var(--raio) var(--raio) 0 0;
+  padding-block: var(--secao);
+}
+
+.escuro {
+  background: var(--piche);
+  color: var(--branco);
+}
+
+.cor {
+  background: var(--purpura);
+  color: var(--branco);
+}
+
+/* Textura granulada da marca */
+.grao {
+  position: relative;
+  isolation: isolate;
+}
+
+.grao::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-image: var(--ruido);
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Cabeçalho de seção: rótulo pequeno à esquerda, título grande à direita */
+.cabeca {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.cabeca h2 {
+  max-width: 18ch;
+  font-size: var(--t-h2);
+}
+
+@media (min-width: 60rem) {
+  .cabeca {
+    grid-template-columns: 1fr 3fr;
+    align-items: start;
+  }
+
+  .cabeca .kicker {
+    padding-top: 0.9em;
+  }
+}
+
+/* Topo das páginas internas */
+.pagina-topo {
+  padding-top: clamp(8rem, 16vw, 12rem);
+  padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.pagina-topo h1 {
+  max-width: 16ch;
+  margin-top: 1.25rem;
+  font-size: var(--t-display);
+}
+
+.pagina-topo .pagina-apoio {
+  max-width: 36ch;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  font-size: var(--t-h3);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+/* Folha clara sobre bloco escuro */
+.fundo-piche {
+  background: var(--piche);
+}
+
+.claro {
+  background: var(--branco);
+  color: var(--piche);
+}
+
+/* Grade de projetos: uma coluna no celular, duas no desktop; .-largo ocupa a linha inteira */
+.projetos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4.5rem) clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+@media (min-width: 48rem) {
+  .projetos {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .projetos > .-largo {
+    grid-column: 1 / -1;
+  }
+
+  .projetos.-tres {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Link de texto com seta */
+.link-seta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.35em;
+}
+
+.link-seta span {
+  transition: transform 0.4s var(--ease);
+}
+
+.link-seta:hover span {
+  transform: translateX(0.3em);
+}
+
+/* Entrada ao rolar. Só esconde quando há JS (classe "js" posta no <head>); sem JS tudo aparece direto. */
+.js [data-revela] {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition:
+    opacity 0.9s var(--ease),
+    transform 0.9s var(--ease);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+
+.js [data-revela].visivel {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-revela] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .botao {
+    transition: none;
+  }
+}
+
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Links que abrem em nova aba avisam isso ao leitor de tela (texto invisível na tela) */
+a[target='_blank']::after {
+  content: ' (abre em nova aba)';
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Link "Pular para o conteúdo": aparece ao receber foco pelo teclado */
+.so-leitor:focus-visible {
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  width: auto;
+  height: auto;
+  padding: 0.9em 1.4em;
+  border-radius: 999px;
+  clip-path: none;
+  background: var(--piche);
+  color: var(--branco);
+  font-weight: 500;
+  line-height: 1;
+}

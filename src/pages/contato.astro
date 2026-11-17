@@ -1,0 +1,153 @@
+---
+import Base from '../layouts/Base.astro';
+import { acaoContato, canais, contato } from '../data/site';
+---
+
+<Base
+  titulo="Contato | Aurea"
+  descricao="Fale com a Aurea pelo WhatsApp, Instagram ou e-mail. A primeira conversa é sem compromisso."
+  semChamada
+>
+  <section class="contato cor grao">
+    <div class="container contato-grade">
+      <div>
+        <p class="kicker">Contato</p>
+        <h1 data-revela>Tem uma ideia pra <span class="grifo">tirar do papel?</span></h1>
+        <p class="contato-apoio" data-revela style="--i:1">
+          Conta pra gente como é o seu negócio. A primeira conversa é sem compromisso.
+        </p>
+        <a class="botao -lima -grande" href={acaoContato.url} target="_blank" rel="noopener" data-revela style="--i:2">
+          {acaoContato.rotulo}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <ul class="canais" data-revela style="--i:3">
+        {
+          canais.map((c) => (
+            <li>
+              <a href={c.url} target="_blank" rel="noopener">
+                <span class="canais-nome">{c.nome}</span>
+                <span class="canais-valor">{c.visivel}</span>
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <div>
+            <span class="canais-nome">Onde</span>
+            <span class="canais-valor">{contato.cidade}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contato {
+    padding-top: clamp(8rem, 16vw, 12rem);
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+    /* Brilho no canto de cima à direita, longe dos textos (no celular fica pequeno, atrás da navbar) */
+    background:
+      radial-gradient(42% 16rem at 100% 0% in oklab, var(--lima) 0%, var(--lima) 14%, var(--lilas) 44%, transparent 74%),
+      var(--purpura);
+  }
+
+  /* No desktop: chamada à esquerda, canais à direita, alinhados pela base */
+  @media (min-width: 64rem) {
+    .contato {
+      background:
+        radial-gradient(46% 62% at 100% 0% in oklab, var(--lima) 0%, var(--lima) 14%, var(--lilas) 44%, transparent 74%),
+        var(--purpura);
+    }
+
+    /* Título um pouco menor aqui, para o botão do WhatsApp caber na primeira tela */
+    .contato {
+      padding-top: clamp(7rem, 11vw, 9.5rem);
+    }
+
+    .contato .contato-grade h1 {
+      font-size: clamp(3rem, 5.6vw, 5.5rem);
+    }
+
+    .contato-grade {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      align-items: end;
+      gap: clamp(3rem, 6vw, 7rem);
+    }
+
+    .contato-grade .canais {
+      margin-top: 0;
+    }
+
+    .contato-grade .canais a,
+    .contato-grade .canais div {
+      grid-template-columns: 7rem 1fr;
+    }
+
+    .contato-grade .canais-valor {
+      font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+    }
+  }
+
+  .contato h1 {
+    max-width: 14ch;
+    margin-top: 1.25rem;
+    font-size: var(--t-display);
+  }
+
+  .contato-apoio {
+    max-width: 30ch;
+    margin: 1.75rem 0 2.5rem;
+    font-size: var(--t-h3);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .canais {
+    list-style: none;
+    margin: clamp(4rem, 8vw, 7rem) 0 0;
+    padding: 0;
+    display: grid;
+    border-top: 1.5px solid rgb(255 255 255 / 0.45);
+  }
+
+  .canais a,
+  .canais div {
+    display: grid;
+    gap: 0.25rem;
+    padding: 1.25rem 0;
+    border-bottom: 1.5px solid rgb(255 255 255 / 0.45);
+  }
+
+  .canais-nome {
+    font-size: var(--t-mini);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .canais-valor {
+    /* No celular encolhe para o e-mail caber em uma linha */
+    font-size: clamp(1rem, 4.6vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+    transition: color 0.3s;
+  }
+
+  .canais a:hover .canais-valor {
+    color: var(--lima);
+  }
+
+  @media (min-width: 60rem) {
+    .canais a,
+    .canais div {
+      grid-template-columns: 1fr 3fr;
+      align-items: baseline;
+    }
+  }
+</style>

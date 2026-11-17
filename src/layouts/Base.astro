@@ -1,0 +1,614 @@
+---
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import { acaoContato, canais, contato, menu } from '../data/site';
+
+interface Props {
+  titulo?: string;
+  descricao?: string;
+  /** Esconde a chamada de contato antes do rodapé (a página de contato já é a chamada). */
+  semChamada?: boolean;
+}
+
+const {
+  titulo = 'Aurea | Sites para negócios de Uberaba',
+  descricao = 'A Aurea cria sites, landing pages e identidades visuais para negócios de Uberaba e região.',
+  semChamada = false,
+} = Astro.props;
+
+const caminho = Astro.url.pathname;
+const ativo = (url: string) => caminho === url || caminho.startsWith(`${url}/`);
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <meta name="theme-color" content="#3E00F9" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <!-- Marca que há JS antes de pintar: as animações de entrada só escondem conteúdo com esta classe. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+  </head>
+  <body>
+    <a class="so-leitor" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="topo">
+      <a href="/" class="topo-logo" aria-label="Aurea, início"><Logo /></a>
+
+      <nav class="topo-links" aria-label="Principal">
+        {
+          menu.map((m) =>
+            m.url === '/contato' ? (
+              <a href={m.url} class="topo-contato" aria-current={ativo(m.url) ? 'page' : undefined}>
+                {m.nome}
+              </a>
+            ) : (
+              <a href={m.url} aria-current={ativo(m.url) ? 'page' : undefined}>
+                {m.nome}
+              </a>
+            ),
+          )
+        }
+      </nav>
+
+      <!-- Menu do celular: <details> abre e fecha sem JavaScript -->
+      <details class="topo-menu">
+        <summary>
+          <span class="topo-menu-abrir">Menu</span>
+          <span class="topo-menu-fechar">Fechar</span>
+        </summary>
+        <nav class="topo-painel" aria-label="Principal">
+          <a href="/" aria-current={caminho === '/' ? 'page' : undefined}>Início</a>
+          {
+            menu.map((m) => (
+              <a href={m.url} aria-current={ativo(m.url) ? 'page' : undefined}>
+                {m.nome}
+              </a>
+            ))
+          }
+          <a class="botao -lima" href={acaoContato.url} target="_blank" rel="noopener">
+            {acaoContato.rotulo}
+            <span aria-hidden="true">→</span>
+          </a>
+        </nav>
+      </details>
+    </header>
+
+    <main id="conteudo">
+      <slot />
+
+      {
+        !semChamada && (
+          <section class="folha cor grao chamada">
+            <div class="container">
+              <h2 data-revela>
+                Tem uma ideia pra <span class="grifo">tirar do papel?</span>
+              </h2>
+              <p data-revela style="--i:1">
+                Conta pra gente como é o seu negócio. A primeira conversa é sem compromisso.
+              </p>
+              <a class="botao -lima -grande" href={acaoContato.url} target="_blank" rel="noopener" data-revela style="--i:2">
+                {acaoContato.rotulo}
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </section>
+        )
+      }
+    </main>
+
+    <footer class:list={['rodape escuro', { '-sem-chamada': semChamada }]}>
+      <div class="container">
+        <Logo class="rodape-logo" desenha />
+        <div class="rodape-linha">
+          <p>© {new Date().getFullYear()} Aurea · {contato.cidade}</p>
+          <ul>
+            {
+              menu.map((m) => (
+                <li>
+                  <a href={m.url}>{m.nome}</a>
+                </li>
+              ))
+            }
+          </ul>
+          <ul>
+            {
+              canais.map((c) => (
+                <li>
+                  <a href={c.url} target="_blank" rel="noopener">
+                    {c.nome}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Aparece só em páginas com capas em vídeo (o script tira o hidden) -->
+    <button class="pausa-videos" type="button" aria-pressed="false" aria-label="Pausar os vídeos das capas" hidden>
+      <span aria-hidden="true"></span>
+    </button>
+
+    <div class="grao-geral" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true"></div>
+
+    <script>
+      import Lenis from 'lenis';
+
+      const semMovimento = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Scroll suave
+      let lenis: Lenis | null = null;
+      if (!semMovimento) {
+        const l = (lenis = new Lenis({ anchors: true }));
+        const quadro = (t: number) => {
+          l.raf(t);
+          requestAnimationFrame(quadro);
+        };
+        requestAnimationFrame(quadro);
+      }
+
+      // Entrada dos elementos ao rolar (data-revela) e desenho do logo do rodapé (data-desenha)
+      const observador = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            if (e.isIntersecting) {
+              e.target.classList.add('visivel');
+              observador.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      document.querySelectorAll('[data-revela], [data-desenha]').forEach((el) => observador.observe(el));
+
+      // Capas em vídeo. Com "reduzir movimento" fica o pôster parado e nada disto roda.
+      // - data-capa="sozinho": toca enquanto está na tela.
+      // - data-capa="hover": toca com o mouse ou o foco em cima do cartão; em tela de toque, enquanto está na tela.
+      // O botão .pausa-videos para e retoma todos (a escolha vale para a sessão).
+      const capas = [...document.querySelectorAll<HTMLVideoElement>('video[data-capa]')];
+      const botaoPausa = document.querySelector<HTMLButtonElement>('.pausa-videos');
+      if (capas.length && botaoPausa && !semMovimento) {
+        const temHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+        const naTela = new Set<HTMLVideoElement>();
+        const emCima = new Set<HTMLVideoElement>();
+        let pausado = false;
+        try {
+          pausado = sessionStorage.getItem('videos-pausados') === '1';
+        } catch {}
+
+        const sozinho = (v: HTMLVideoElement) => v.dataset.capa === 'sozinho' || !temHover;
+        const atualiza = () => {
+          for (const v of capas) {
+            const deveTocar = !pausado && naTela.has(v) && (sozinho(v) || emCima.has(v));
+            if (deveTocar) v.play().catch(() => {});
+            else v.pause();
+          }
+          botaoPausa.setAttribute('aria-pressed', String(pausado));
+          botaoPausa.setAttribute('aria-label', pausado ? 'Tocar os vídeos das capas' : 'Pausar os vídeos das capas');
+        };
+
+        const visiveis = new IntersectionObserver(
+          (entradas) => {
+            for (const e of entradas) {
+              const v = e.target as HTMLVideoElement;
+              if (e.isIntersecting) naTela.add(v);
+              else naTela.delete(v);
+            }
+            atualiza();
+          },
+          { threshold: 0.25 },
+        );
+        for (const v of capas) {
+          visiveis.observe(v);
+          const cartao = v.closest('a') ?? v;
+          const entra = () => (emCima.add(v), atualiza());
+          const sai = () => (emCima.delete(v), atualiza());
+          cartao.addEventListener('pointerenter', entra);
+          cartao.addEventListener('pointerleave', sai);
+          cartao.addEventListener('focusin', entra);
+          cartao.addEventListener('focusout', sai);
+        }
+
+        botaoPausa.hidden = false;
+        botaoPausa.addEventListener('click', () => {
+          pausado = !pausado;
+          try {
+            sessionStorage.setItem('videos-pausados', pausado ? '1' : '0');
+          } catch {}
+          atualiza();
+        });
+        atualiza();
+      }
+
+      // Menu do celular: enquanto aberto, trava a rolagem e tira o resto da página do Tab; fecha com Esc
+      const menu = document.querySelector<HTMLDetailsElement>('.topo-menu');
+      const fundo = document.querySelectorAll<HTMLElement>('main, footer, .pausa-videos');
+      menu?.addEventListener('toggle', () => {
+        document.documentElement.classList.toggle('menu-aberto', menu.open);
+        fundo.forEach((el) => (el.inert = menu.open));
+        if (menu.open) lenis?.stop();
+        else lenis?.start();
+      });
+      addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu?.open) {
+          menu.open = false;
+          menu.querySelector('summary')?.focus();
+        }
+      });
+
+      // Cursor: ponto que segue o mouse e cresce sobre links e botões
+      const cursor = document.querySelector<HTMLElement>('.cursor');
+      if (cursor && !semMovimento && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        let x = innerWidth / 2;
+        let y = innerHeight / 2;
+        let cx = x;
+        let cy = y;
+        addEventListener('pointermove', (e) => {
+          // Toque e caneta não têm cursor para substituir
+          if (e.pointerType !== 'mouse') return;
+          x = e.clientX;
+          y = e.clientY;
+          if (!cursor.classList.contains('-ativo')) {
+            // Primeiro movimento: nasce já na posição do mouse e só então o cursor do sistema some
+            cx = x;
+            cy = y;
+            document.documentElement.classList.add('cursor-proprio');
+          }
+          cursor.classList.add('-ativo');
+          const alvo = (e.target as Element).closest('a, button, summary, [data-cursor]');
+          cursor.classList.toggle('-grande', Boolean(alvo));
+        });
+        document.documentElement.addEventListener('pointerleave', () => cursor.classList.remove('-ativo'));
+        const segue = () => {
+          cx += (x - cx) * 0.2;
+          cy += (y - cy) * 0.2;
+          cursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+          requestAnimationFrame(segue);
+        };
+        requestAnimationFrame(segue);
+      }
+    </script>
+
+    <style is:global>
+      /* Topo: pílula flutuante com fundo próprio, legível sobre qualquer seção */
+      .topo {
+        position: fixed;
+        inset: 0.75rem var(--margem) auto;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: calc(110rem - 2 * var(--margem));
+        margin-inline: auto;
+        padding: 0.4rem 0.4rem 0.4rem 1.25rem;
+        border: 1px solid rgb(15 15 15 / 0.08);
+        border-radius: 999px;
+        background: rgb(255 255 255 / 0.86);
+        -webkit-backdrop-filter: blur(14px) saturate(1.4);
+        backdrop-filter: blur(14px) saturate(1.4);
+        color: var(--piche);
+        font-size: 0.95rem;
+      }
+
+      .topo-logo svg {
+        height: 1.25rem;
+        width: auto;
+      }
+
+      .topo-links {
+        display: none;
+        align-items: center;
+        gap: clamp(1rem, 2.5vw, 2.25rem);
+      }
+
+      .topo-links a:not(.topo-contato) {
+        transition: opacity 0.3s;
+      }
+
+      .topo-links a:not(.topo-contato):hover {
+        opacity: 0.55;
+      }
+
+      .topo-links a:not(.topo-contato)[aria-current='page'] {
+        text-decoration: underline;
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 0.35em;
+      }
+
+      .topo-contato,
+      .topo-menu summary {
+        padding: 0.85em 1.4em;
+        border-radius: 999px;
+        background: var(--piche);
+        color: var(--branco);
+        font-weight: 500;
+        line-height: 1;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+
+      .topo-contato:hover,
+      .topo-contato[aria-current='page'] {
+        background: var(--lima);
+        color: var(--piche);
+      }
+
+      /* Área de toque do logo */
+      .topo-logo {
+        padding-block: 0.75rem;
+        margin-block: -0.35rem;
+      }
+
+      /* Dentro do painel escuro do menu o contorno de foco é lima (púrpura sobre preto não aparece) */
+      .topo-menu[open] :focus-visible {
+        outline-color: var(--lima);
+      }
+
+      /* Menu do celular */
+      .topo-menu summary {
+        padding-block: 1em;
+        position: relative;
+        z-index: 2;
+        list-style: none;
+        cursor: pointer;
+      }
+
+      .topo-menu summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .topo-menu-fechar,
+      .topo-menu[open] .topo-menu-abrir {
+        display: none;
+      }
+
+      .topo-menu[open] .topo-menu-fechar {
+        display: inline;
+      }
+
+      .topo-menu[open] summary {
+        background: var(--lima);
+        color: var(--piche);
+      }
+
+      .topo-painel {
+        position: fixed;
+        inset: 0;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 0.35rem;
+        padding: 6rem var(--margem) 2rem;
+        background: var(--piche);
+        color: var(--branco);
+        font-size: clamp(2.4rem, 11vw, 4rem);
+        font-weight: 500;
+        line-height: 1.1;
+        letter-spacing: -0.035em;
+      }
+
+      .topo-painel a[aria-current='page'] {
+        color: var(--lima);
+      }
+
+      .topo-painel .botao {
+        align-self: flex-start;
+        margin-top: 1.75rem;
+        font-size: 1.05rem;
+        letter-spacing: 0;
+      }
+
+      /* Com o menu aberto o logo fica acima do painel escuro */
+      .topo:has(.topo-menu[open]) {
+        border-color: transparent;
+        background: none;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+
+      .topo:has(.topo-menu[open]) .topo-logo {
+        position: relative;
+        z-index: 2;
+        color: var(--branco);
+      }
+
+      @media (min-width: 48rem) {
+        .topo-links {
+          display: flex;
+        }
+
+        .topo-menu {
+          display: none;
+        }
+      }
+
+      /* Chamada de contato */
+      .chamada {
+        /* Sobe sobre a seção anterior, que aparece atrás dos cantos arredondados */
+        margin-top: calc(var(--raio) * -1);
+        /* Mais espaço embaixo para o botão ficar acima do brilho lima */
+        padding-block: clamp(6rem, 14vw, 12rem) clamp(10rem, 18vw, 15rem);
+        text-align: center;
+        background: var(--brilho-lima-base), var(--purpura);
+      }
+
+      .chamada h2 {
+        max-width: 14ch;
+        margin-inline: auto;
+        font-size: var(--t-display);
+      }
+
+      .chamada p {
+        max-width: 30ch;
+        margin: 1.75rem auto 2.5rem;
+        font-size: var(--t-h3);
+        line-height: 1.25;
+        letter-spacing: -0.015em;
+      }
+
+      /* Rodapé */
+      .rodape {
+        position: relative;
+        margin-top: calc(var(--raio) * -1);
+        padding: clamp(3rem, 7vw, 6rem) 0 2rem;
+        border-radius: var(--raio) var(--raio) 0 0;
+      }
+
+      .rodape.-sem-chamada {
+        margin-top: 0;
+        border-radius: 0;
+      }
+
+      .rodape-logo {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        color: var(--lima);
+      }
+
+      .rodape-linha {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 1rem 2.5rem;
+        margin-top: clamp(2rem, 4vw, 3.5rem);
+        font-size: 0.9rem;
+      }
+
+      .rodape-linha ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      /* padding = área de toque de 44px */
+      .rodape-linha a {
+        display: inline-block;
+        padding-block: 0.75rem;
+        transition: color 0.3s;
+      }
+
+      .rodape-linha p {
+        padding-block: 0.75rem;
+      }
+
+      .rodape-linha a:hover {
+        color: var(--lima);
+      }
+
+      /* Botão de pausar/tocar os vídeos das capas */
+      .pausa-videos {
+        position: fixed;
+        left: var(--margem);
+        bottom: 1rem;
+        z-index: 45;
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        border: 1px solid rgb(255 255 255 / 0.25);
+        border-radius: 50%;
+        background: var(--piche);
+        color: var(--branco);
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+
+      .pausa-videos[hidden] {
+        display: none;
+      }
+
+      .pausa-videos:hover {
+        background: var(--lima);
+        color: var(--piche);
+      }
+
+      .pausa-videos:focus-visible {
+        outline-color: var(--lima);
+        box-shadow: 0 0 0 2px var(--piche);
+      }
+
+      /* Ícone: duas barras (pausar) ou triângulo (tocar) */
+      .pausa-videos span {
+        width: 0.75rem;
+        height: 0.85rem;
+        border-inline: 0.25rem solid currentColor;
+      }
+
+      .pausa-videos[aria-pressed='true'] span {
+        width: 0;
+        height: 0;
+        margin-left: 0.15rem;
+        border-block: 0.45rem solid transparent;
+        border-left: 0.75rem solid currentColor;
+        border-right: 0;
+      }
+
+      /* Menu do celular aberto: a página atrás não rola */
+      html.menu-aberto {
+        overflow: hidden;
+      }
+
+      /* Granulação leve sobre a página inteira. Fica abaixo da navbar (50) e das capas de projeto (41). */
+      .grao-geral {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background-image: var(--ruido);
+        opacity: 0.09;
+        pointer-events: none;
+      }
+
+      .cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+        mix-blend-mode: difference;
+      }
+
+      .cursor::before {
+        content: '';
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        margin: -7px 0 0 -7px;
+        border-radius: 50%;
+        background: var(--lima);
+        transform: scale(0);
+        transition: transform 0.35s var(--ease);
+      }
+
+      .cursor.-ativo::before {
+        transform: scale(1);
+      }
+
+      .cursor.-ativo.-grande::before {
+        transform: scale(4);
+      }
+    </style>
+  </body>
+</html>

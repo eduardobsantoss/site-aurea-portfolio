@@ -1,0 +1,104 @@
+---
+// Capa de um projeto. Usa o vídeo de public/projetos/<slug>.mp4 quando existe, com a imagem
+// src/assets/projetos/<slug>.jpg de pôster; sem vídeo mostra só a imagem; sem nenhum dos dois, um bloco com o nome.
+// O vídeo não tem autoplay no HTML: quem dá play é o script de Base.astro, só com a capa na tela
+// e sem "reduzir movimento". Sem JS fica o pôster.
+import fs from 'node:fs';
+import path from 'node:path';
+import { Image, getImage } from 'astro:assets';
+
+interface Props {
+  slug: string;
+  nome: string;
+  /** Atributo sizes da imagem (largura que a capa ocupa na tela). */
+  sizes?: string;
+  /** Proporção mais baixa (16:9), para capas que ocupam a largura toda. */
+  largo?: boolean;
+  /** 'sozinho': toca ao entrar na tela. 'hover': toca ao passar o mouse ou focar (no toque, ao entrar na tela). */
+  toca?: 'sozinho' | 'hover';
+}
+
+const { slug, nome, sizes = '100vw', largo = false, toca = 'hover' } = Astro.props;
+
+const imagens = import.meta.glob<{ default: ImageMetadata }>('../assets/projetos/*.jpg', { eager: true });
+const imagem = imagens[`../assets/projetos/${slug}.jpg`]?.default;
+const temVideo = fs.existsSync(path.join(process.cwd(), 'public', 'projetos', `${slug}.mp4`));
+const poster = imagem && temVideo ? await getImage({ src: imagem, width: 1280, format: 'webp' }) : null;
+const alt = `Página inicial do site ${nome}`;
+---
+
+<div class:list={['capa', { '-largo': largo, '-vazia': !imagem && !temVideo }]}>
+  {
+    temVideo ? (
+      <video
+        data-capa={toca}
+        src={`/projetos/${slug}.mp4`}
+        poster={poster?.src}
+        width="1280"
+        height="800"
+        muted
+        loop
+        playsinline
+        preload="none"
+        disablepictureinpicture
+        aria-label={alt}
+      />
+    ) : imagem ? (
+      <Image src={imagem} alt={alt} widths={[640, 960, 1280]} sizes={sizes} />
+    ) : (
+      <span>{nome}</span>
+    )
+  }
+</div>
+
+<style>
+  .capa {
+    /* Acima da granulação geral (z-index 40), para o trabalho do cliente aparecer limpo */
+    position: relative;
+    z-index: 41;
+    aspect-ratio: 16 / 10;
+    border-radius: var(--raio);
+    overflow: hidden;
+    background: var(--chumbo);
+    /* Contorno sutil: separa do fundo as capas de sites escuros */
+    box-shadow: 0 0 0 1px rgb(128 128 128 / 0.22);
+    transition: transform 0.6s var(--ease);
+  }
+
+  @media (min-width: 48rem) {
+    .capa.-largo {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  .capa :global(img),
+  .capa video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transition: transform 0.9s var(--ease);
+  }
+
+  .capa.-vazia {
+    display: grid;
+    place-items: end start;
+    padding: clamp(1.25rem, 2.5vw, 2.25rem);
+    background: linear-gradient(160deg, var(--violeta), var(--purpura) 70%);
+    color: var(--branco);
+    font-size: var(--t-h2);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  /* Ao passar o mouse no cartão do projeto (Projeto.astro) */
+  :global(a:hover) > .capa {
+    transform: scale(0.985);
+  }
+
+  :global(a:hover) > .capa :global(img),
+  :global(a:hover) > .capa video {
+    transform: scale(1.04);
+  }
+</style>

@@ -1,0 +1,290 @@
+---
+import Base from '../layouts/Base.astro';
+import { servicos, diferenciais, faq } from '../data/site';
+
+const dois = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base
+  titulo="Serviços | Aurea"
+  descricao="Site institucional, landing page, identidade visual e manutenção para negócios de Uberaba e região."
+>
+  <section class="pagina-topo container">
+    <p class="kicker">Serviços</p>
+    <h1 data-revela>Tudo o que seu negócio precisa para existir <span class="grifo">bem</span> na internet.</h1>
+  </section>
+
+  <section class="servicos container">
+    <ol class="pilha">
+      {
+        servicos.map((s, i) => (
+          <li class="pilha-item" id={s.id} style={`--n:${i}`}>
+            <span class="pilha-num">{dois(i + 1)}</span>
+            <h2>{s.titulo}</h2>
+            <p>{s.texto}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="folha escuro porque">
+    <div class="container">
+      <div class="cabeca">
+        <p class="kicker">Por que a Aurea</p>
+        <h2 data-revela>Site bom é o que <span class="grifo">trabalha</span> por você.</h2>
+      </div>
+      <ul class="bento">
+        {
+          diferenciais.map((d, i) => (
+            <li class={`bento-item -b${i}`} data-revela style={`--i:${i}`}>
+              <h3>{d.titulo}</h3>
+              <p>{d.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <div class="fundo-piche">
+    <section class="folha claro" id="duvidas">
+      <div class="container">
+        <div class="cabeca">
+          <p class="kicker">Dúvidas</p>
+          <h2 data-revela>Perguntas que todo mundo faz.</h2>
+        </div>
+        <div class="faq">
+          {
+            faq.map((f) => (
+              <details>
+                <summary>
+                  <span>{f.pergunta}</span>
+                  <span class="faq-mais" aria-hidden="true" />
+                </summary>
+                <p>{f.resposta}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  /* Serviços: cartões que empilham ao rolar */
+  .servicos {
+    padding-bottom: var(--secao);
+  }
+
+  .pilha {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .pilha-item {
+    display: grid;
+    gap: 0.75rem 2rem;
+    min-height: clamp(11rem, 22vw, 18rem);
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+    border-radius: var(--raio);
+    background: var(--cinza);
+    box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06);
+    align-content: start;
+  }
+
+  .pilha-item:nth-child(even) {
+    background: #e7e7ec;
+  }
+
+  .pilha-item:last-child {
+    background: var(--lima);
+  }
+
+  /* Chegando por âncora, o cartão para abaixo da navbar */
+  .pilha-item {
+    scroll-margin-top: 6rem;
+  }
+
+  .pilha-num {
+    font-size: var(--t-mini);
+    font-weight: 500;
+    opacity: 0.72;
+  }
+
+  .pilha-item h2 {
+    font-size: var(--t-h2);
+  }
+
+  .pilha-item p {
+    max-width: 44ch;
+  }
+
+  /* Empilhamento só no desktop, onde todos os cartões têm a mesma altura e um cobre o outro por inteiro.
+     No celular os textos têm alturas diferentes e o cartão de cima cortava o de baixo no meio da linha. */
+  @media (min-width: 60rem) {
+    .pilha-item {
+      position: sticky;
+      top: calc(5.75rem + var(--n) * 1rem);
+      grid-template-columns: 1fr 5fr 4fr;
+      align-items: start;
+    }
+
+    .pilha-item p {
+      align-self: end;
+      font-size: clamp(1.15rem, 1.5vw, 1.45rem);
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+  }
+
+  /* Diferenciais, sobre folha escura */
+  .bento {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .bento-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2.5rem;
+    min-height: clamp(12rem, 18vw, 16rem);
+    padding: clamp(1.5rem, 2.5vw, 2.25rem);
+    border-radius: var(--raio);
+    background: var(--chumbo);
+  }
+
+  .bento-item h3 {
+    font-size: var(--t-h3);
+  }
+
+  .bento-item p {
+    max-width: 34ch;
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
+    line-height: 1.4;
+  }
+
+  /* Os dois cartões largos levam título maior, para o bloco não ficar com quatro caixas iguais */
+  .bento-item.-b0 h3,
+  .bento-item.-b3 h3 {
+    font-size: var(--t-h2);
+  }
+
+  .bento-item.-b0 {
+    background: var(--purpura);
+  }
+
+  .bento-item.-b2 {
+    background: var(--lima);
+    color: var(--piche);
+  }
+
+  .bento-item.-b3 {
+    background: var(--branco);
+    color: var(--piche);
+  }
+
+  @media (min-width: 48rem) {
+    .bento {
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .bento-item.-b0,
+    .bento-item.-b3 {
+      grid-column: span 4;
+    }
+
+    .bento-item.-b1,
+    .bento-item.-b2 {
+      grid-column: span 2;
+    }
+  }
+
+  /* Dúvidas */
+  .faq {
+    border-top: 1.5px solid var(--piche);
+  }
+
+  .faq details {
+    border-bottom: 1.5px solid var(--piche);
+  }
+
+  .faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.25rem, 2.4vw, 2rem) 0;
+    font-size: var(--t-h3);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-mais {
+    position: relative;
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .faq-mais::before,
+  .faq-mais::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.4s var(--ease);
+  }
+
+  .faq-mais::after {
+    transform: rotate(90deg);
+  }
+
+  .faq details[open] .faq-mais::after {
+    transform: rotate(0deg);
+  }
+
+  .faq details p {
+    max-width: 48ch;
+    padding-bottom: clamp(1.5rem, 2.6vw, 2.25rem);
+    font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+    line-height: 1.4;
+  }
+
+  /* Abre e fecha com transição onde o navegador suporta; nos demais abre direto */
+  .faq details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 0.5s var(--ease),
+      content-visibility 0.5s allow-discrete;
+  }
+
+  .faq details[open]::details-content {
+    block-size: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq details::details-content {
+      transition: none;
+    }
+  }
+</style>

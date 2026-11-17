@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Página não encontrada | Aurea" descricao="Esta página não existe ou mudou de endereço.">
+  <section class="pagina-topo container nao-achou">
+    <p class="kicker">Erro 404</p>
+    <h1>Essa página <span class="grifo">não existe.</span></h1>
+    <p class="pagina-apoio">O endereço pode ter mudado ou ter sido digitado errado.</p>
+    <div class="nao-achou-acoes">
+      <a class="botao" href="/">Voltar para o início</a>
+      <a class="botao -contorno" href="/projetos">Ver projetos</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nao-achou {
+    padding-bottom: calc(var(--secao) + var(--raio));
+  }
+
+  .nao-achou-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+</style>
