@@ -1,4 +1,5 @@
 ---
+import { rota } from '../lib/rota';
 import Base from '../layouts/Base.astro';
 ---
 
@@ -8,8 +9,8 @@ import Base from '../layouts/Base.astro';
     <h1>Essa página <span class="grifo">não existe.</span></h1>
     <p class="pagina-apoio">O endereço pode ter mudado ou ter sido digitado errado.</p>
     <div class="nao-achou-acoes">
-      <a class="botao" href="/">Voltar para o início</a>
-      <a class="botao -contorno" href="/projetos">Ver projetos</a>
+      <a class="botao" href={rota('/')}>Voltar para o início</a>
+      <a class="botao -contorno" href={rota('/projetos')}>Ver projetos</a>
     </div>
   </section>
 </Base>

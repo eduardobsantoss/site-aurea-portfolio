@@ -1,6 +1,6 @@
 # Portfólio da Aurea
 
-Site institucional e portfólio da Aurea, marca de criação de sites para negócios locais de Uberaba (MG), em várias páginas. Objetivo: mostrar os trabalhos e levar o visitante a chamar no WhatsApp. Vai para a Vercel, ainda sem domínio próprio.
+Site institucional e portfólio da Aurea, marca de criação de sites para negócios locais de Uberaba (MG), em várias páginas. Objetivo: mostrar os trabalhos e levar o visitante a chamar no WhatsApp. Publicado no GitHub Pages (`https://eduardobsantoss.github.io/site-aurea-portfolio/`) por `.github/workflows/pages.yml` a cada push na `main`; depois vai para a Vercel ou domínio próprio.
 
 ## Stack
 
@@ -18,6 +18,7 @@ Site institucional e portfólio da Aurea, marca de criação de sites para negó
 | Navbar e menu do celular, chamada de contato, rodapé, cursor, Lenis, animações de entrada, play das capas | `src/layouts/Base.astro` |
 | Capa de projeto (vídeo com pôster) e cartão de projeto | `src/components/Capa.astro`, `Projeto.astro` |
 | Logo e monograma (SVG inline, `currentColor`) | `src/components/Logo.astro`, `Monograma.astro` |
+| Prefixo do `base` nos links internos | `src/lib/rota.ts` |
 
 Páginas:
 
@@ -36,6 +37,10 @@ Vídeos das capas: só o cartão largo (`toca="sozinho"`) toca ao entrar na tela
 Toda página termina com a chamada de contato e o rodapé de `Base.astro` (a de contato usa `semChamada`). Não há página "Sobre": falta conteúdo real para ela.
 
 Capas dos projetos: vídeo em `public/projetos/<slug>.mp4`, pôster em `src/assets/projetos/<slug>.jpg` e segunda imagem opcional em `<slug>-2.jpg`. Para regravar ou incluir um projeto, acrescente o site na lista de `scripts/gravar-capas.mjs` e rode `node scripts/gravar-capas.mjs <pasta-temporária> . <slug>` e depois `node scripts/gerar-imagens-capas.mjs <pasta-temporária> .` (usa o Edge instalado, sem dependências). O site da Realium não aceita rolagem por script; a capa dele mostra só o topo.
+
+## Caminhos internos
+
+No GitHub Pages o site fica em `/site-aurea-portfolio/`, não na raiz. Todo link ou arquivo interno passa por `rota('/caminho')` (de `src/lib/rota.ts`); nunca escrever `href="/..."` direto. O workflow passa `SITE_URL` e `BASE_PATH` para o `astro.config.mjs`; sem essas variáveis o build sai na raiz, como antes. Para testar localmente como no Pages: `BASE_PATH=/site-aurea-portfolio npm run build && npm run preview`.
 
 ## Identidade (não inventar fora disto)
 
@@ -78,5 +83,5 @@ Estrutura e movimento inspirados em https://cuberto.com/: base clara e escura al
 4. Seção de depoimentos, quando houver depoimentos reais.
 5. Trocar o logo provisório pelos arquivos originais.
 6. Conferir num celular de verdade e no desktop com mouse (cursor, hovers, animações, vídeos das capas); a revisão foi feita por emulação em 1440×900 e 375×812.
-7. Ajustar `site` em `astro.config.mjs` quando houver domínio.
+7. Quando houver domínio: ajustar `site` em `astro.config.mjs` (ou um `CNAME` no Pages, com `BASE_PATH` vazio).
 8. Imagem de compartilhamento (`og:image`): ainda não existe.

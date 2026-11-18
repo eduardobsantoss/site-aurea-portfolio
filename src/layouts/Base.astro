@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
+import { rota, semBase } from '../lib/rota';
 import { acaoContato, canais, contato, menu } from '../data/site';
 
 interface Props {
@@ -16,7 +17,7 @@ const {
   semChamada = false,
 } = Astro.props;
 
-const caminho = Astro.url.pathname;
+const caminho = semBase(Astro.url.pathname);
 const ativo = (url: string) => caminho === url || caminho.startsWith(`${url}/`);
 ---
 
@@ -28,7 +29,7 @@ const ativo = (url: string) => caminho === url || caminho.startsWith(`${url}/`);
     <title>{titulo}</title>
     <meta name="description" content={descricao} />
     <meta name="theme-color" content="#3E00F9" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={rota('/favicon.svg')} />
     <meta property="og:title" content={titulo} />
     <meta property="og:description" content={descricao} />
     <meta property="og:type" content="website" />
@@ -42,17 +43,17 @@ const ativo = (url: string) => caminho === url || caminho.startsWith(`${url}/`);
     <a class="so-leitor" href="#conteudo">Pular para o conteúdo</a>
 
     <header class="topo">
-      <a href="/" class="topo-logo" aria-label="Aurea, início"><Logo /></a>
+      <a href={rota('/')} class="topo-logo" aria-label="Aurea, início"><Logo /></a>
 
       <nav class="topo-links" aria-label="Principal">
         {
           menu.map((m) =>
             m.url === '/contato' ? (
-              <a href={m.url} class="topo-contato" aria-current={ativo(m.url) ? 'page' : undefined}>
+              <a href={rota(m.url)} class="topo-contato" aria-current={ativo(m.url) ? 'page' : undefined}>
                 {m.nome}
               </a>
             ) : (
-              <a href={m.url} aria-current={ativo(m.url) ? 'page' : undefined}>
+              <a href={rota(m.url)} aria-current={ativo(m.url) ? 'page' : undefined}>
                 {m.nome}
               </a>
             ),
@@ -67,10 +68,10 @@ const ativo = (url: string) => caminho === url || caminho.startsWith(`${url}/`);
           <span class="topo-menu-fechar">Fechar</span>
         </summary>
         <nav class="topo-painel" aria-label="Principal">
-          <a href="/" aria-current={caminho === '/' ? 'page' : undefined}>Início</a>
+          <a href={rota('/')} aria-current={caminho === '/' ? 'page' : undefined}>Início</a>
           {
             menu.map((m) => (
-              <a href={m.url} aria-current={ativo(m.url) ? 'page' : undefined}>
+              <a href={rota(m.url)} aria-current={ativo(m.url) ? 'page' : undefined}>
                 {m.nome}
               </a>
             ))
@@ -115,7 +116,7 @@ const ativo = (url: string) => caminho === url || caminho.startsWith(`${url}/`);
             {
               menu.map((m) => (
                 <li>
-                  <a href={m.url}>{m.nome}</a>
+                  <a href={rota(m.url)}>{m.nome}</a>
                 </li>
               ))
             }

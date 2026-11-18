@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { rota } from '../../lib/rota';
 import Base from '../../layouts/Base.astro';
 import Capa from '../../components/Capa.astro';
 import Projeto from '../../components/Projeto.astro';
@@ -22,7 +23,7 @@ const endereco = new URL(p.url).hostname.replace(/^www\./, '');
 
 <Base titulo={`${p.nome} | Aurea`} descricao={`${p.resumo} criado pela Aurea para ${p.nome}. ${p.sobre}`}>
   <section class="pagina-topo container">
-    <p class="kicker"><a href="/projetos">Projetos</a> / {p.area}</p>
+    <p class="kicker"><a href={rota('/projetos')}>Projetos</a> / {p.area}</p>
     <h1 data-revela>{p.nome}</h1>
   </section>
 

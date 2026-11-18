@@ -1,4 +1,5 @@
 ---
+import { rota } from '../lib/rota';
 // Cartão de projeto: capa + nome + área. Leva para a página do projeto.
 import Capa from './Capa.astro';
 
@@ -17,7 +18,7 @@ const { projeto: p, largo = false, toca = largo ? 'sozinho' : 'hover', sizes, ni
 const Titulo = `h${nivel}` as 'h2' | 'h3';
 ---
 
-<a class="projeto" href={`/projetos/${p.slug}`}>
+<a class="projeto" href={rota(`/projetos/${p.slug}`)}>
   <Capa slug={p.slug} nome={p.nome} largo={largo} toca={toca} sizes={sizes} />
   <div class="projeto-info">
     <Titulo class="projeto-nome">

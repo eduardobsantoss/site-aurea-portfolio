@@ -1,4 +1,5 @@
 ---
+import { rota } from '../lib/rota';
 // Capa de um projeto. Usa o vídeo de public/projetos/<slug>.mp4 quando existe, com a imagem
 // src/assets/projetos/<slug>.jpg de pôster; sem vídeo mostra só a imagem; sem nenhum dos dois, um bloco com o nome.
 // O vídeo não tem autoplay no HTML: quem dá play é o script de Base.astro, só com a capa na tela
@@ -32,7 +33,7 @@ const alt = `Página inicial do site ${nome}`;
     temVideo ? (
       <video
         data-capa={toca}
-        src={`/projetos/${slug}.mp4`}
+        src={rota(`/projetos/${slug}.mp4`)}
         poster={poster?.src}
         width="1280"
         height="800"
